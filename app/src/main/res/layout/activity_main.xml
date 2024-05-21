@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.upstox_assignment.presentation.viewmodel.UserHoldingsViewModel" />
+
+        <variable
+            name="activity"
+            type="com.example.upstox_assignment.presentation.MainActivity" />
+
+        <import type="com.example.upstox_assignment.presentation.utility.Extensions"/>
+
+    </data>
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        tools:context=".presentation.MainActivity">
+
+        <include
+            android:id="@+id/action_bar"
+            layout="@layout/action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/bottom_bar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:visibility="@{!viewModel.isLoading}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/action_bar" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:visibility="@{viewModel.isLoading}"
+            app:layout_constraintTop_toBottomOf="@id/action_bar"
+            app:layout_constraintBottom_toTopOf="@id/bottom_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:elevation="4dp"
+            android:focusable="true"
+            android:paddingHorizontal="16dp"
+            android:background="@color/lightGrey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/total_pl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profit_amp_loss"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingVertical="6dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ImageView
+                android:id="@+id/arrow_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/arrow_up"
+                app:layout_constraintBottom_toBottomOf="@id/total_pl"
+                app:layout_constraintStart_toEndOf="@id/total_pl"
+                app:layout_constraintTop_toTopOf="@id/total_pl"
+                android:contentDescription="@string/expand_arrow" />
+
+            <TextView
+                android:id="@+id/total_pl_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:text="@{viewModel.overallPl}"
+                android:textColor="@{viewModel.overallPlDouble > 0 ? @color/green : @color/red}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/total_pl"
+                android:paddingVertical="6dp"
+                app:visibilitySoft="@{!viewModel.isLoading}"
+                tools:text="123" />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_view_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/total_pl"
+                android:paddingVertical="6dp"
+                app:visibility="@{viewModel.isLoading}">
+
+                <TextView
+                    android:id="@+id/shimmer_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/loading"
+                    android:textColor="#878a88"
+                    android:textSize="14sp"
+                    />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/pl_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/total_pl"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/current_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/current_value"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:paddingVertical="6dp"/>
+
+                <TextView
+                    android:id="@+id/current_value_figure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.overallCurrentValue}"
+                    app:layout_constraintTop_toTopOf="@+id/current_value"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:paddingVertical="6dp"
+                    tools:text="1234"
+                    />
+
+                <TextView
+                    android:id="@+id/total_investment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/total_investment"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/current_value"
+                    android:paddingVertical="6dp"/>
+
+                <TextView
+                    android:id="@+id/total_investment_figure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.overallTotalInvestment}"
+                    app:layout_constraintTop_toTopOf="@+id/total_investment"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:paddingVertical="6dp"
+                    tools:text="1234" />
+
+                <TextView
+                    android:id="@+id/today_pl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/todays_profit_amp_loss"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/total_investment"
+                    android:paddingVertical="6dp"/>
+
+                <TextView
+                    android:id="@+id/today_pl_figure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.overallTodayPl}"
+                    android:textColor="@{viewModel.overallTodayPlDouble > 0 ? @color/green : @color/red}"
+                    app:layout_constraintTop_toTopOf="@+id/today_pl"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:paddingVertical="6dp"
+                    tools:text="1234" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="4dp"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
